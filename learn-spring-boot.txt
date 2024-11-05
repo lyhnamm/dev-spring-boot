@@ -1,0 +1,153 @@
+SPRING BOOT 3 KEY CONCEPTS:
+
+==============================
+Section 1: Spring Core
+Day 1 (1/11/2024):
+- Inversion of Control
+- Dependency Injection
+	+ Constructor Injection
+	+ Setter Injection
+	+ Thực hiện inject trong Spring là ở bước sử dụng @Qualifier
+- Constructor Injection
+	+ Component Annotation: Đánh dấu class là Spring Bean sẵn sàng cho việc injection
+	+ Autowired: annotation đánh dấu việc tự động inject dependency
+- Setter Injection
+- Component Scanning
+	+ scanBasePackages: Chỉ ra cho SpringBootApplication biết các packages cần quét component
+- Qualifier: Trong trường hợp có nhiều class triển khai, cần sử dụng Qualifier Annotation để chỉ ra cho Spring biết cần triển khai lớp nào.
+	+ Cú pháp: Thêm thuộc tính @Qualifier vào như một tham số của Constructor hoặc hàm Setter.
+- Primary: Giải pháp thay thế cho Qualifier
+	+ Cách sử dụng: Khai báo @Primary annotation ở tại class triển khai chính, và Spring sẽ sử dụng triển khai đó để thực hiện injection
+	+ @Primary - Only one
+		- Caused by: org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type :type available: more than one 'primary' bean found among candidates
+	+ Có thể có việc mix giữa @Primary và @Qualifier, khi đó @Qualifier được ưu tiên hơn @Primary
+	+ Nên sử dụng @Qualifier hay @Primary: nên sử dụng @Qualifier vì:
+		- Sử dụng @Qualifier vì cụ thể hơn
+		- Ưu tiên cao hơn		
+
+Day 2 (2/11/2024):
+- Lazy Initialization:
+	+ Mặc định khi start application, all bean được khởi tạo (các class có @Component annotation)
+	+ Khai báo Lazy --> chỉ khởi tạo bean cho việc injection hoặc được chỉ định rõ ra
+	+ Tuy nhiên, nếu chương trình có nhiều beans, ta không thực hiện add @Lazy annotation cho từng lớp mà config global trong file "application.properties"
+		spring.main.lazy-initialization=true
+	+ Lợi ích: 
+		Khởi tạo Lazy sẽ giúp chương trình start nhanh hơn nếu có nhiều Component
+		Giảm bộ nhớ sử dụng
+	+ Bất lợi:
+		Nếu sử dụng cho web, có thể không phát hiện ra được lỗi tiềm ẩn vì chương trình vẫn khởi chạy, chỉ đến khi truy cập đến end-point thì việc khởi tạo mới thực hiện, và lỗi lúc này mới được phát hiện
+	Tránh việc rơi vào chủ quan của việc tối ưu hóa quá sớm --> Hãy off Lazy Initialization theo đúng mặc định
+- Bean scope:
+	+ Bean scope mặc định là Singleton
+	+ Singleton là gì?
+		Spring Container chỉ tạo duy nhất một instance đối với bean đó
+			In constructor: CricketCoach
+			In constructor: DemoController
+			com.hainam.springcoredemo.common.CricketCoach@6282d533
+			com.hainam.springcoredemo.common.CricketCoach@6282d533
+	+ Chỉ định Bean scopes khác: Ngoài Singleton là mặc định ra, trong Spring Boot có các Bean scope khác như:
+		singleton, prototype
+		request, session, application, websocket (Chỉ dùng cho Web application)
+	+ Chỉ định Bean scope bằng @Scope annotation: @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+- Bean Lifecycle:
+	+ Trong Spring, Bean có vòng đời
+		Được khởi tạo từ khi hàm @PostConstruct được gọi thành công --> Sẵn sàng để sử dụng
+		Được hủy khi hàm @PreDestroy được gọi thành công
+	+ Quá trình lập trình:
+		B1: Viết các hàm thực hiện khởi tạo và hủy Bean (trong class)
+		B2: Thêm vào các annotation @PostConstruct và @PreDestroy để đánh dấu
+	Lưu ý đặc biệt: Với "prototype" scope beans, Spring sẽ không gọi đến phương thức destroy
+- Java Configuration Bean
+	+ Trường hợp mà phải inject một class của thư viện bên thứ ba vào Spring, thì không thể khai báo nó là @Component được --> Sử dụng @Bean để thay thế
+	+ Các bước thực hiện
+		B1: Tạo lớp Java và add annotation @Configuration
+		B2: Tạo method và add annotation @Bean
+		B3: Inject bean vào controller
+
+
+==============================
+Section 2: Hibernate/JPA CRUD
+Day 1 (2/11/2024):
+- Hibernate overview
+	+ Là framework để lưu trữ Java object trong database
+	+ Hibernate xử lý low-level SQL 
+	+ Hạn chế sử dụng JDBC
+	+ ORM: Mapping giữa Java class với bảng trong DB
+- JPA overview
+	+ Jakarta Persistent API
+	+ Là một API tiêu chuẩn ORM
+	+ Ánh xạ đối tượng sang quan hệ -> gọi là Thực thể (entity)
+	+ entityManager
+	+ CRUD: Create, Read, Update, Read
+- Mối quan hệ giữa Hibernate/JPA với JDBC
+	+ Hibernate/JPA sử dụng JDBC để giao tiếp với DB -> Thư viện cấp cao cung cấp phương thức giao tiếp với DB
+- JPA Annotation
+	@Entity <-> Khai báo mapping một Java class với bảng trong DB
+	@Table <-> Table trong DB
+	@Column <-> Column của Table trong DB
+	@Id <-> Khóa chính của Table
+	@GeneratedValue <-> Strategy để tạo ra ID cho mỗi đối tượng tạo ra
+- EntityManager vs JPA Repository
+	+ Usecase:
+		EntityManager cung cấp phương thức để can thiệp tùy chỉnh sâu việc thao tác với DB (Low level)
+		JpaRepository cung cấp các phương thức chuẩn có sẵn để giao tiếp với DB, giúp người dùng giao tiếp với DB mà code ít nhất có thể (High level)
+	==> Nên sử dụng cả hai trong cùng một project, trước tiên thì học về EntityManager trước, sau đó học về JpaRepository sau để hiểu cơ chế hoạt động của JpaRepository
+- JPA Query Language (JPQL)
+	+ Language for retriving objects
+	+ Similar to SQL
+	+ However, it based on Entity name and Entity fields instead of Table name and Table columns by default
+- Create Object: entityManager.persist
+- Read Object: entityManager.find
+- Query Object: entityManager.createQuery --> TypedQuery
+- Update Object: entityManager.merge
+- Update by Conditional: entityManager.createQuery("UPDATE ...").executeQuery --> Query
+- Delete Object: entityManager.remove
+- Delete All: entityManager.createQuery("DELETE ...").executeQuery --> Query
+
+
+==============================
+Section 3: REST CRUD APIs
+Day 1 (3/11/2024):
+- What is REST Service?
+	+ REST: REpresent State Transfer
+	+ REST is independency language, so client and server can use any language to develop
+	+ Data format? JSON
+	+ Some projects: Weather forecast, Movie ticket, CRM app
+- JSON:
+	+ JavaScript Object Notation
+	+ Data format for storing and exchanging data
+	+ Language independent
+	+ Format:
+		Curly brace define: {}
+		Object members are key-value pair
+		Key is always in double-quotes
+		JSON value: Number - no quotes, String - in quotes, Array, nested JSON, boolean, null
+- REST HTTP:
+	+ POST, GET, PUT, DELETE <=> C R U D
+	+ HTTP Request: Request line (Method + http version) + Header + Body Message
+	+ HTTP Respone: Respone line (server protocol + status code) + Header variables + Message response
+	+ Status code: 1xx: Information, 2xx: Success, 3xx: redirection, 4xx: Client error, 5xx: Server error
+	+ MIME content type: Type of message
+	+ jsonplaceholder.typicode.com
+- JSON Data Binding
+	+ Process convert JSON to Java POJO (class)
+	+ Use getter/setter methods
+	+ Spring use Jackson-databind behind the scenes
+	+ JSON to Java POJO: call setter methods
+	+ Java POJO to JSON: call getter methods
+- @PathVariable annotation
+	+ Chú thích một biến truyền vào API để lấy ra dữ liệu theo điều kiện
+	+ Được đặt trong cặp dấu ngoặc nhọn { và }
+	+ Tên trùng với biến truyền vào hàm
+- Exception Handling trong Spring Boot
+- CRUD REST Example
+	+ Employee example: Sử dụng EntityManager
+
+Day 2 (5/11/2024):
+- Spring Data JPA:
+	+ Hiện tại đang sử dụng entityManager -> Tự viết các lớp triển khai và hàm trong DAO --> Code lặp đi lặp lại việc viết các lớp/hàm DAO.
+	+ JPA có một interface là JpaRepository cho phép mở rộng bằng việc chỉ cần khai báo kiểu entity và kiểu dữ liệu khóa chính, interface này sẽ là interface Repository
+	+ Không cần viết hàm triển khai cho Repository phía trên, chỉ cần inject vào Service layer và sử dụng các hàm có sẵn của thư viện để giao tiếp với DB --> Giảm thời gian và khối lượng code
+	+ https://docs.spring.io/spring-data/jpa/reference/jpa/specifications.html
+	+ Extending and adding custom queries với JPQL
+	+ Define custom methods with low-level coding
