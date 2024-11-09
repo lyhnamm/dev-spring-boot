@@ -1,29 +1,16 @@
 package com.hainam.srpingboot.employee.service;
 
-import com.hainam.srpingboot.employee.dao.EmployeeDAO;
 import com.hainam.srpingboot.employee.model.Employee;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class EmployeeService {
+public interface EmployeeService {
 
-    private final EmployeeDAO employeeDAO;
+    List<Employee> findAllEmployee();
 
-    public EmployeeService(EmployeeDAO employeeDAO) {
-        this.employeeDAO = employeeDAO;
-    }
+    Employee findEmployeeById(int id);
 
-    public List<Employee> findAllEmployee() {
-        return employeeDAO.findAll();
-    }
-
-    public Employee findEmployeeById(int id) {
-        return employeeDAO.findById(id);
-    }
-
-    public List<Employee> findEmployeeByName(String name) {
-        return employeeDAO.findByName(name);
-    }
+    List<Employee> findEmployeeByName(String name);
 }
