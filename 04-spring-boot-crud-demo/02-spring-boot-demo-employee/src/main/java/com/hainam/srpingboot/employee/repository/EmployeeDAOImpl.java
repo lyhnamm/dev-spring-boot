@@ -24,4 +24,9 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         TypedQuery<Employee> query = em.createQuery(" from Employee ", Employee.class);
         return query.getResultList();
     }
+
+    @Override
+    public Employee findById(int theId) {
+        return em.find(Employee.class, theId);
+    }
 }
