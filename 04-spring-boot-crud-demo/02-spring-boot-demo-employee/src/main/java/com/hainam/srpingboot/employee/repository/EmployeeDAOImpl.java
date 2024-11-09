@@ -24,4 +24,12 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         TypedQuery<Employee> query = em.createQuery(" from Employee ", Employee.class);
         return query.getResultList();
     }
+
+    @Override
+    public List<Employee> findByName(String theName) {
+        TypedQuery<Employee> query = em.createQuery(" from Employee where firstName like :firstName or lastName like :lastName", Employee.class);
+        query.setParameter("firstName", "%" + theName + "%");
+        query.setParameter("lastName", "%" + theName + "%");
+        return query.getResultList();
+    }
 }

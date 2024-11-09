@@ -7,4 +7,6 @@ import java.util.List;
 public interface EmployeeDAO {
 
     List<Employee> findAll();
+
+    List<Employee> findByName(String theName);
 }
