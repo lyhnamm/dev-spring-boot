@@ -37,4 +37,15 @@ public class EmployeeDAOImpl implements EmployeeDAO {
         query.setParameter("lastName", "%" + theName + "%");
         return query.getResultList();
     }
+
+    @Override
+    public Employee save(Employee theEmployee) {
+        return em.merge(theEmployee);
+    }
+
+    @Override
+    public void delete(int id) {
+        Employee theEmployee = em.find(Employee.class, id);
+        em.remove(theEmployee);
+    }
 }

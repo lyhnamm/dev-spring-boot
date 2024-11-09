@@ -13,4 +13,8 @@ public interface EmployeeService {
     Employee findEmployeeById(int id);
 
     List<Employee> findEmployeeByName(String name);
+
+    Employee saveEmployee(Employee employee);
+
+    void deleteEmployee(int id);
 }
