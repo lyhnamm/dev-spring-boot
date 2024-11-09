@@ -21,6 +21,7 @@ public class Employee {
     @Column(name = "email")
     private String email;
 
+
     // define constructor
     public Employee(String firstName, String lastName, String email) {
         this.firstName = firstName;
@@ -32,8 +33,8 @@ public class Employee {
 
     }
 
-    // define getters/setters
 
+    // define getters/setters
     public int getId() {
         return id;
     }
@@ -66,8 +67,8 @@ public class Employee {
         this.email = email;
     }
 
-    // define toString methods
 
+    // define toString methods
     @Override
     public String toString() {
         return "Employee{" +
