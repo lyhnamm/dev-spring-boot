@@ -3,9 +3,7 @@ package com.hainam.srpingboot.employee.controller;
 import com.hainam.srpingboot.employee.model.Employee;
 import com.hainam.srpingboot.employee.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +21,15 @@ public class EmployeeController {
     @GetMapping("/employees")
     public List<Employee> getAllEmployees() {
         return employeeService.findAllEmployee();
+    }
+
+    @GetMapping("/employee/{id}")
+    public Employee getEmployeeById(@PathVariable int id) {
+        return employeeService.findEmployeeById(id);
+    }
+
+    @GetMapping("/employees/{employeeName}")
+    public List<Employee> getEmployeeByName(@PathVariable String employeeName) {
+        return employeeService.findEmployeeByName(employeeName);
     }
 }
